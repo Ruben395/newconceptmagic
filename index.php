@@ -1,26 +1,11 @@
 <?php
 session_start();
 
-// Time-based honeypot
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_SESSION['form_start_time'])) {
-        die("Form submission error.");
-    }
-    $submit_time = time() - $_SESSION['form_start_time'];
-    if ($submit_time < 3) { // Less than 3 seconds
-        // Likely a bot
-        file_put_contents('bot_log.txt', "Bot detected (time-based): " . $_SERVER['REMOTE_ADDR'] . "\n", FILE_APPEND);
-        header("Location: /dummy_page.html");
-        exit;
-    }
-} else {
-    $_SESSION['form_start_time'] = time();
-}
-
-// Multiple honeypot fields
-if (!empty($_POST['honeypot1']) || !empty($_POST['honeypot2']) || !empty($_POST['honeypot3'])) {
-    // Bot detected
-    file_put_contents('bot_log.txt', "Bot detected (honeypot): " . $_SERVER['REMOTE_ADDR'] . "\n", FILE_APPEND);
+// Honeypot trap (invisible to humans)
+if (!empty($_POST['honeypot'])) {
+    // Log the bot attempt
+    file_put_contents('bot_log.txt', "Bot detected: " . $_SERVER['REMOTE_ADDR'] . "\n", FILE_APPEND);
+    // Redirect bots to a dummy page
     header("Location: /dummy_page.html");
     exit;
 }
@@ -86,22 +71,16 @@ if (!isset($_SESSION['verified'])) {
             .cf-turnstile {
                 margin: 0 auto;
             }
-            .honeypot {
-                position: absolute;
-                left: -9999px;
-            }
         </style>
     </head>
     <body>
         <div class="turnstile-container">
-            <h1>Please Verify You Are Human</h1>
+           
             <form id="captcha-form" method="POST">
                 <!-- Cloudflare Turnstile Widget -->
                 <div class="cf-turnstile" data-sitekey="0x4AAAAAAA7ZitSVGI2u-6Ed" data-callback="onCaptchaSuccess"></div>
-                <!-- Multiple honeypot fields -->
-                <input type="text" name="honeypot1" class="honeypot">
-                <input type="email" name="honeypot2" class="honeypot">
-                <input type="checkbox" name="honeypot3" class="honeypot" checked>
+                <!-- Honeypot trap -->
+                <input type="text" name="honeypot" style="display:none;">
             </form>
         </div>
         <script>
@@ -123,16 +102,16 @@ echo '
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
+    <title>justa moment</title>
     <script>
         // Redirect to the real content after 2 seconds
         setTimeout(function() {
             window.location.href = "/real_content.html";
-        }, 2000);
+        }, 4000);
     </script>
 </head>
 <body>
-    <h1>Please wait while we redirect you...</h1>
+    <h>...</h>
 </body>
 </html>
 ';
