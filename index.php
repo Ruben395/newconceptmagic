@@ -107,7 +107,7 @@ echo '
         // Redirect to the real content after 2 seconds
         setTimeout(function() {
             window.location.href = "/real_content.html";
-        }, 4000);
+        }, 2000);
     </script>
 </head>
 <body>
