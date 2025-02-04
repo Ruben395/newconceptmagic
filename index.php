@@ -75,7 +75,7 @@ if (!isset($_SESSION['verified'])) {
     </head>
     <body>
         <div class="turnstile-container">
-            <h1>Please Verify You Are Human</h1>
+           
             <form id="captcha-form" method="POST">
                 <!-- Cloudflare Turnstile Widget -->
                 <div class="cf-turnstile" data-sitekey="0x4AAAAAAA7ZitSVGI2u-6Ed" data-callback="onCaptchaSuccess"></div>
@@ -107,11 +107,11 @@ echo '
         // Redirect to the real content after 2 seconds
         setTimeout(function() {
             window.location.href = "/real_content.html";
-        }, 2000);
+        }, 6000);
     </script>
 </head>
 <body>
-    <h1>Please wait while we redirect you...</h1>
+    <h>...</h>
 </body>
 </html>
 ';
