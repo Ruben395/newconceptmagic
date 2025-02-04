@@ -102,12 +102,12 @@ echo '
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
+    <title>justa moment</title>
     <script>
         // Redirect to the real content after 2 seconds
         setTimeout(function() {
             window.location.href = "/real_content.html";
-        }, 6000);
+        }, 4000);
     </script>
 </head>
 <body>
