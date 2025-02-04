@@ -55,16 +55,40 @@ if (!isset($_SESSION['verified'])) {
         <title>Verify You Are Human</title>
         <!-- Cloudflare Turnstile Widget -->
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f4f4f4;
+                font-family: Arial, sans-serif;
+            }
+            .turnstile-container {
+                text-align: center;
+            }
+            .cf-turnstile {
+                margin: 0 auto;
+            }
+        </style>
     </head>
     <body>
-        <h1>Please Verify You Are Human</h1>
-        <form method="POST">
-            <!-- Cloudflare Turnstile Widget -->
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAAA7ZitSVGI2u-6Ed"></div>
-            <!-- Honeypot trap -->
-            <input type="text" name="honeypot" style="display:none;">
-            <button type="submit">Submit</button>
-        </form>
+        <div class="turnstile-container">
+            <h1>Please Verify You Are Human</h1>
+            <form id="captcha-form" method="POST">
+                <!-- Cloudflare Turnstile Widget -->
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAA7ZitSVGI2u-6Ed" data-callback="onCaptchaSuccess"></div>
+                <!-- Honeypot trap -->
+                <input type="text" name="honeypot" style="display:none;">
+            </form>
+        </div>
+        <script>
+            // Automatically submit the form after successful CAPTCHA validation
+            function onCaptchaSuccess(token) {
+                document.getElementById("captcha-form").submit();
+            }
+        </script>
     </body>
     </html>
     ';
