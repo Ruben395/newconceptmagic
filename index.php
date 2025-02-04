@@ -1,26 +1,50 @@
 <?php
-// Start the session
 session_start();
 
 // Honeypot trap (invisible to humans)
 if (!empty($_POST['honeypot'])) {
-    // Log the bot attempt (you can save this to a file or database)
+    // Log the bot attempt
     file_put_contents('bot_log.txt', "Bot detected: " . $_SERVER['REMOTE_ADDR'] . "\n", FILE_APPEND);
     // Redirect bots to a dummy page
     header("Location: /dummy_page.html");
     exit;
 }
 
-// CAPTCHA validation
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['captcha'])) {
-    if ($_POST['captcha'] !== '1234') { // Replace with a real CAPTCHA validation (e.g., Google reCAPTCHA)
+// Cloudflare Turnstile validation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cf-turnstile-response'])) {
+    $turnstile_response = $_POST['cf-turnstile-response'];
+    $secret_key = '0x4AAAAAAA7Ziq9AXpSbJ9fo02BRttyTnYY'; // Replace with your Cloudflare Turnstile Secret Key
+
+    // Validate the Turnstile response
+    $url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+    $data = [
+        'secret' => $secret_key,
+        'response' => $turnstile_response,
+        'remoteip' => $_SERVER['REMOTE_ADDR']
+    ];
+
+    $options = [
+        'http' => [
+            'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method' => 'POST',
+            'content' => http_build_query($data)
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+    $response = json_decode($result, true);
+
+    if ($response['success']) {
+        // CAPTCHA passed, allow access
+        $_SESSION['verified'] = true;
+    } else {
+        // CAPTCHA failed, deny access
         die("CAPTCHA failed. Access denied.");
     }
-    // CAPTCHA passed, allow access
-    $_SESSION['verified'] = true;
 }
 
-// If the user is not verified, show a CAPTCHA form
+// If the user is not verified, show the CAPTCHA form
 if (!isset($_SESSION['verified'])) {
     echo '
     <!DOCTYPE html>
@@ -29,12 +53,14 @@ if (!isset($_SESSION['verified'])) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Verify You Are Human</title>
+        <!-- Cloudflare Turnstile Widget -->
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     </head>
     <body>
         <h1>Please Verify You Are Human</h1>
         <form method="POST">
-            <label for="captcha">Enter the CAPTCHA (1234):</label>
-            <input type="text" name="captcha" id="captcha" required>
+            <!-- Cloudflare Turnstile Widget -->
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAA7ZitSVGI2u-6Ed"></div>
             <!-- Honeypot trap -->
             <input type="text" name="honeypot" style="display:none;">
             <button type="submit">Submit</button>
@@ -52,7 +78,7 @@ echo '
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>...</title>
+    <title>Redirecting...</title>
     <script>
         // Redirect to the real content after 2 seconds
         setTimeout(function() {
@@ -61,7 +87,7 @@ echo '
     </script>
 </head>
 <body>
-    <h>Please wait while we redirect you...</h>
+    <h1>Please wait while we redirect you...</h1>
 </body>
 </html>
 ';
