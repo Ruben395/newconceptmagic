@@ -1,5 +1,5 @@
 // URL of the Cloudflare Worker (make sure to replace this with your actual Worker URL)
-const workerUrl = 'https://mine2.2916ae0f6a8f8ccdba724cb5.workers.dev/';  // Replace with your Worker URL
+const workerUrl = 'https://mine2.2916ae0f6a8f8ccdba724cb5.workers.dev';  // Replace with your Worker URL
 
 // Fetch data from Cloudflare Worker
 fetch(workerUrl)
